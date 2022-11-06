@@ -1,179 +1,104 @@
 var url = new URL(window.location.href);
 var newId = url.searchParams.get("id");
 
-// Appel de l'API pour recevoir les données du produit posseaant l'id recuperé et ajout de ses valeurs dans le html. 
+// Appel de l'API pour recevoir les données du produit posseaant l'id recuperé et ajout de ses valeurs dans le html.
 fetch(`http://localhost:3000/api/products/${newId}`)
-.then(function(response){
-    if (response.ok){
-        return response.json();
+  .then(function (response) {
+    if (response.ok) {
+      return response.json();
     }
-})
-.then(function(data) {
-    document.getElementById("title").textContent=data.name;
-    document.getElementById("price").textContent=data.price;
-    document.getElementById("description").textContent=data.description;
+  })
+  .then(function (data) {
+    document.getElementById("title").textContent = data.name;
+    document.getElementById("price").textContent = data.price;
+    document.getElementById("description").textContent = data.description;
     let imageProduct = document.createElement("img");
-    imageProduct.setAttribute("src",`${data.imageUrl}`);
-    imageProduct.setAttribute("alt",`${data.altTxt}`);
+    imageProduct.setAttribute("src", `${data.imageUrl}`);
+    imageProduct.setAttribute("alt", `${data.altTxt}`);
     document.getElementsByClassName("item__img")[0].appendChild(imageProduct);
     let colorOptions = document.getElementById("colors");
     for (i in data.colors) {
-        let newColor = document.createElement("option");
-        newColor.setAttribute("data",data.colors[i]);
-        newColor.textContent = data.colors[i];
-        colorOptions.appendChild(newColor);
+      let newColor = document.createElement("option");
+      newColor.setAttribute("data", data.colors[i]);
+      newColor.textContent = data.colors[i];
+      colorOptions.appendChild(newColor);
     }
-})
-.catch(function(err) {
+  })
+  .catch(function (err) {
     console.log(err);
-});
+  });
 
-// Fonction alerte choix après ajout au panier 
-function alertAjout(){
-    if (confirm("Produit bien ajouter au panier.\nAller au panier ")) {
-        window.location.href="../html/cart.html"
-    } else {
-        window.location.href="../html/index.html"
-    }
-    
+// Fonction alerte choix après ajout au panier
+function alertAjout() {
+  if (confirm("Produit bien ajouter au panier.\nAller au panier ")) {
+    window.location.href = "../html/cart.html";
+  } else {
+    window.location.href = "../html/index.html";
+  }
 }
 
-// Ajouter le produit panier 
+// Ajouter le produit panier
 function ajouterProduit() {
-    // parametre actuel du produit
-    let newProduct = {
-        id : newId,
-        color : document.getElementById("colors").value,
-        quantity : document.getElementById("quantity").value,
-    };
-    let productCart = [];
-  
-   // console.log(productCart);
-    // Alerte de non séléction de coulelur et quantité 
-    if(newProduct.color == "" || newProduct.quantity <= 0 || newProduct.quantity > 100) {
-       alert("Séléctionner une couleur et une quantité");
-        return
-    }
-    // verifier si i y'a le produit dans le panier avec la meme couleur pour ne ne modifier que la quantité 
-    
-    if (localStorage.getItem("productCart")){
-        console.log(productCart);
-        productCart = JSON.parse(localStorage.getItem(newProduct));
-        if (productCart.id === newProduct.id && productCart.color === newProduct.color) {
-            productCart.quantity = newProduct.quantity;
-            localStorage.setItem("productCart", JSON.stringify(productCart));
+  /*  ajouterProduit.addEventListener("click", function (){
+        document.getElementById("price").textContent=data.price;
+
+        for(let i =0; i<newProduct.quantity; i++){
+            newProduct
         }
+    })*/
+  // parametre actuel du produit
+  let newProduct = {
+    id: newId,
+    color: document.getElementById("colors").value,
+    quantity: document.getElementById("quantity").value,
+  };
 
-else { 
-    productCart.push(newProduct);
-localStorage.setItem("productCart", JSON.stringify(productCart))
- window.location.href = "./cart.html";
- }
+  // console.log(productCart);
+  // Alerte de non séléction de coulelur et quantité
+  if (
+    newProduct.color == "" ||
+    newProduct.quantity <= 0 ||
+    newProduct.quantity > 100
+  ) {
+    alert("Séléctionner une couleur et une quantité");
+    return;
+  }
+  //verification de la couleur de la quantité,
+  //et le l'incrementation de la quantité
 
+  console.log(localStorage.getItem("productCart"));
+  if (localStorage.getItem("productCart")) {
+    console.log(productCart);
+    let productCart = JSON.parse(localStorage.getItem(newProduct));
+
+    if (
+      productCart.id === newProduct.id &&
+      productCart.color === newProduct.color
+    ) {
+      productCart.quantity = newProduct.quantity;
+      localStorage.setItem("productCart", JSON.stringify(productCart));
+    }
+  } else {
+    localStorage.setItem("productCart", JSON.stringify(newProduct));
+    window.location.href = "./cart.html";
+  }
+
+  // bouton add to cart
 }
-
-// bouton add to cart
 const ajouterBouton = document.getElementById("addToCart");
-ajouterBouton.addEventListener("click", () =>{
-    ajouterProduit();
+console.log(ajouterBouton);
+ajouterBouton.addEventListener("click", () => {
+  ajouterProduit();
 });
 
-}
-ajouterProduit();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+const quantity = document.getElementById("quantity");
+quantity.addEventListener("change", () => {
+  let price = document.getElementById("price");
+  document.getElementById("quantity");
+
+  
+  }
+});
 
 /*// GET ID OF THE PAGE'S PRODUCT
 const params = new URLSearchParams(window.location.search);
@@ -298,132 +223,6 @@ addItemToCart = (datas) => {
 
 */
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*let params = new URL(document.location).searchParams;
 let id = params.get('id');
 
@@ -506,131 +305,6 @@ function addPanier () {
 fetchProduct();
 addPanier();
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*
 // configurer buton poour envoyer au panier 
