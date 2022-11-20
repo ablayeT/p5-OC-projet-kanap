@@ -1,12 +1,14 @@
 let apiProduct = "http://localhost:3000/api/products";
 
 fetch(apiProduct)
-.then((res) => {
+  .then((res) => {
     return res.json();
-})
-.then((data) => {
-    for (product of data){
-        document.getElementById("items").innerHTML +=`<a href="./product.html?id=${product._id}">
+  })
+  .then((data) => {
+    for (product of data) {
+      document.getElementById(
+        "items"
+      ).innerHTML += `<a href="./product.html?id=${product._id}">
               <article>
                <img
                 src="${product.imageUrl}"
@@ -15,15 +17,11 @@ fetch(apiProduct)
                  <p class="productDescription">${product.description}</p>
              </article>
          </a>`;
-
     }
-    
-})
-.catch((err) => {
-    alert(err)
-
-});
-
+  })
+  .catch((err) => {
+    alert(err);
+  });
 
 /*
 
@@ -37,23 +35,6 @@ buttons.forEach((button) =>
     window.location = `product.html?${button.id}`; 
  }),
   );*/
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
-
 
 /*let productData = []; 
 const fetchProduct = async () => {
@@ -82,33 +63,6 @@ const fetchProduct = async () => {
  };
 fetchProduct();*/
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*fetch("http://localhost:3000/api/products")
 .then(data => data.json())
 .then(listProduitJson => {
@@ -124,34 +78,6 @@ fetchProduct();*/
     }
 });
  */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*let  produitContainer= document.getElementById("items")
 
@@ -190,68 +116,6 @@ const afficherLesProduits = async () => {
 
 afficherLesProduits()*/
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*fetch(" http://localhost:3000/api/products")
 .then(data => data.json())
 .then(listProduitJson => {
@@ -266,9 +130,6 @@ afficherLesProduits()*/
     }
 });
 */
-
-
-
 
 /*
 
@@ -289,97 +150,3 @@ fetch(" http://localhost:3000/api/products")
     }
 })
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

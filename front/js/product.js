@@ -1,6 +1,118 @@
 var url = new URL(window.location.href);
+var id = url.searchParams.get("id");
+if (id != null) {
+  let itemPrix = 0;
+  let imgeUrl, alttext, nomArtcle;
+}
+let newPrice;
+
+fetch(`http://localhost:3000/api/products/${id}`)
+  .then((response) => response.json())
+  .then((res) => manipulerDonnees(res));
+
+function manipulerDonnees(data) {
+  const { altTxt, colors, description, imageUrl, name, price } = data;
+  itemPrix = price;
+  imgUrl = imageUrl;
+  alttext = altTxt;
+  nomArtcle = name;
+  newPrice = itemPrix;
+  faireImage(imageUrl, altTxt);
+  faireNom(name);
+  fairePrix(price);
+  faireDescription(description);
+  faireCouleurs(colors);
+}
+
+function faireImage(imageUrl, altTxt) {
+  const image = document.createElement("img");
+  image.src = imageUrl;
+  image.altTxt = altTxt;
+  const parent = document.querySelector(".item__img");
+  if (parent != null) parent.appendChild(image);
+}
+function faireNom(name) {
+  const h1 = document.querySelector("#title");
+  if (h1 != null) h1.textContent = name;
+}
+
+function fairePrix(price) {
+  const span = document.querySelector("#price");
+  if (span != null) {
+    span.textContent = itemPrix;
+  }
+}
+
+function faireDescription(description) {
+  const p = document.querySelector("#description");
+  if (p != null) p.textContent = description;
+}
+function faireCouleurs(colors) {
+  const select = document.querySelector("#colors");
+
+  if (colors != null) {
+    colors.forEach((color) => {
+      const option = document.createElement("option");
+      option.value = color;
+      option.textContent = color;
+      select.appendChild(option);
+    });
+  }
+}
+
+const button = document.querySelector("#addToCart");
+// sur le click on va recuperer la funtion "auClick"
+button.addEventListener("click", auClick);
+//
+function auClick() {
+  const color = document.querySelector("#colors").value;
+  const quantity = document.querySelector("#quantity").value;
+  // si tout es ok : direction page panier
+  if (commandeValide(color, quantity)) return;
+  enregistreCommande(color, quantity);
+  allerVertCart();
+}
+function allerVertCart() {
+  window.location.href = "cart.html";
+}
+
+function enregistreCommande(color, quantity) {
+  // la variable "clé" pour mettre deux elements de meme couleur
+  const clé = `${id}-${color}`;
+  const donnees = {
+    id: id,
+    color: color,
+    quantity: Number(quantity),
+    price: itemPrix,
+    imageUrl: imgUrl,
+    altTxt: alttext,
+    name: nomArtcle,
+  };
+  localStorage.setItem(clé, JSON.stringify(donnees));
+}
+//function qui verifier si la couleur et la quantité sont bien valide
+function commandeValide(color, quantity) {
+  if (
+    color == null ||
+    color === "" ||
+    quantity == null ||
+    (quantity == 0 && quantity < 100)
+  ) {
+    alert("choisissez une couleur et une quantité");
+    return true;
+  }
+}
+
+const quantity = document.getElementById("quantity");
+quantity.addEventListener("change", () => {
+  document.getElementById("price").innerHTML = newPrice * quantity.value;
+});
+
+// Option des couleurs
+
+/*var url = new URL(window.location.href);
 var newId = url.searchParams.get("id");
-//recuêration des données et ajout dans le HTML
+//recuêration des données et  ajout dans le HTML
 fetch(`http://localhost:3000/api/products/${newId}`)
   .then(function (response) {
     if (response.ok) {
@@ -55,10 +167,10 @@ function ajouterProduit() {
   }
   console.log(localStorage.getItem("productCart"));
   if (localStorage.getItem("productCart")) {
-    let productCart = JSON.parse(localStorage.getItem(newProduct));
+    let productCart = JSON.parse(localStorage.getItem(newId));
 
     if (
-      productCart.id === newProduct.id &&
+      productCart === newProduct.id &&
       productCart.color === newProduct.color
     ) {
       productCart.quantity = newProduct.quantity;
@@ -76,13 +188,13 @@ console.log(ajouterBouton);
 ajouterBouton.addEventListener("click", () => {
   ajouterProduit();
 });
-/*
+
 const quantity = document.getElementById("quantity");
 quantity.addEventListener("change", () => {
+  let Newprice = document.getElementById("price");
+});
 
-});*/
-
-/*// GET ID OF THE PAGE'S PRODUCT
+/* GET ID OF THE PAGE'S PRODUCT
 const params = new URLSearchParams(window.location.search);
 
 const id = params.get('id');
@@ -202,7 +314,6 @@ addItemToCart = (datas) => {
         }
     });
 }
-
 */
 
 /*let params = new URL(document.location).searchParams;
