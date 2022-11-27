@@ -1,14 +1,19 @@
 const orderId = getOrderId();
-afficherOrderId();
+
+console.log(or);
+afficherOrderId(orderId);
 supprimeToutCach();
+
 function getOrderId() {
-  var url = new URL(window.location.href);
-  var orderId = url.searchParams.get("orderId");
-  return url;
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  orderId = parseInt(urlParams("orderId"));
+  console.log(orderId);
+  return orderId;
 }
 
 function afficherOrderId(orderId) {
-  const elementOrderId = document.getElementById("#orderId");
+  const elementOrderId = document.getElementById("orderId");
   elementOrderId.textContent = orderId;
 }
 function supprimeToutCach() {
