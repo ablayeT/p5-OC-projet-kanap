@@ -174,11 +174,11 @@ function enregistreNewdataToCache(item) {
  */
 
 const boutonComander = document.querySelector("#order");
-boutonComander.addEventListener("click", () => soumettreFormulaire(e));
+boutonComander.addEventListener("click", (e) => soumettreFormulaire(e));
 
 function soumettreFormulaire(e) {
   e.preventDefault();
-  if (cart.length === O) {
+  if (cart.length === 0) {
     alert("Selectionner un produit à acheter");
     return;
   }
@@ -188,18 +188,25 @@ function soumettreFormulaire(e) {
   // validation de l'email
   if (emailInvalide()) return;
   const body = makeRequestBody();
+
   fetch("http://localhost:3000/api/products/order", {
     method: "POST",
-    body: JSON.stringify(body),
+    mode: "cors",
     headers: {
-      "content-type": "application.json",
+      Accept: "application/json",
+      "Content-Type": "application/json",
     },
+    body: JSON.stringify(body),
   })
     .then((res) => res.json())
     .then((data) => {
       const orderId = data.orderId;
+      console.log(orderId);
       window.location.href =
         "../html/confirmation.html" + "?orderId=" + orderId;
+    })
+    .catch((error) => {
+      console.error("Error:", error);
     });
 }
 function emailInvalide() {
