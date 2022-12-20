@@ -1,26 +1,37 @@
 const cart = [];
 // fonction pour recuperer dans le cache
-retrieveItemFromCache();
+retrieveProductFromCache();
 
-function retrieveItemFromCache() {
+function retrieveProductFromCache() {
   const numberOfItems = localStorage.length;
   for (let i = 0; i < numberOfItems; i++) {
     const item = localStorage.getItem(localStorage.key(i)) || ""; // si item est null ne renvoi rien
     const itemObjet = JSON.parse(item);
+
     cart.push(itemObjet);
   }
-  cart.forEach((item) => displayItem(item)); // affichage des elements
+  cart.forEach((item) => displayProduct(item)); // affichage des elements
 }
-function displayItem(item) {
+function displayProduct(item) {
   const article = makeArticle(item);
   const imageDiv = makeImageDiv(item);
   article.appendChild(imageDiv);
 
+  fetch(`http://localhost:3000/api/products/${item.id}`)
+    .then((response) => response.json())
+    .then((res) => calculerPrix(res, item, article));
+
+  afficherQuantiteTotal(item);
+}
+function calculerPrix(res, item, article) {
+  const { altTxt, colors, description, imageUrl, name, price } = res;
+  const newPrice = price * item.quantity;
+  afficherPrixTotal(price, item.quantity);
+  item.price = newPrice;
+
   const cartItemContent = makecartContent(item);
   article.appendChild(cartItemContent);
   displayArticle(article);
-  afficherPrixTotal(item);
-  afficherQuantiteTotal(item);
 }
 /** debut de displaye item */
 function afficherQuantiteTotal(item) {
@@ -32,20 +43,21 @@ function afficherQuantiteTotal(item) {
   });
   quantiteTotal.textContent = total;
 }
-function afficherPrixTotal(item) {
+function afficherPrixTotal(price, quantity) {
   //  calcul du prix total dans le panier
   let total = 0;
   const prixTotal = document.querySelector("#totalPrice");
-  cart.forEach((item) => {
-    const prixUnitaire = item.price * item.quantity;
-    total += prixUnitaire;
-  });
+
+  const prixUnitaire = price * quantity;
+  total += prixUnitaire;
+
   prixTotal.textContent = total;
 }
 // function displaye article pour mettre article dan la page
 function displayArticle(article) {
   document.querySelector("#cart__items").appendChild(article);
 }
+
 function makeArticle(item) {
   const article = document.createElement("article");
   article.classList.add("cart__item");
@@ -154,8 +166,8 @@ function miseAjourPrixQuantity(id, nouvelleValue, item) {
   const itemAmettreAjour = cart.find((item) => item.id === id);
   itemAmettreAjour.quantity = Number(nouvelleValue);
   item.quantity = itemAmettreAjour.quantity;
-  afficherPrixTotal();
-  afficherQuantiteTotal();
+  afficherPrixTotal(item);
+  afficherQuantiteTotal(item);
   enregistreNewdataToCache(item);
 }
 function supprimeNewDataDansCach(item) {
@@ -201,7 +213,6 @@ function soumettreFormulaire(e) {
     .then((res) => res.json())
     .then((data) => {
       const orderId = data.orderId;
-      console.log(orderId);
       window.location.href =
         "../html/confirmation.html" + "?orderId=" + orderId;
     })
@@ -210,7 +221,7 @@ function soumettreFormulaire(e) {
     });
 }
 function emailInvalide() {
-  const email = document.querySelector("#email").value;
+  const email = document.getElementById("email").value;
   const regex = /^[A-Za-z0-9+_.-]+@(.+)$/;
   if (regex.test(email) === false) {
     alert("Entrez l'email valide s'il vous plait");
@@ -221,6 +232,38 @@ function emailInvalide() {
 function FomulaireInvalide() {
   const formulaire = document.querySelector(".cart__order__form");
   const inputs = formulaire.querySelectorAll("input");
+  const firstName = document.getElementById("firstName");
+  const lastName = document.getElementById("lastName");
+  const adress = document.getElementById("address");
+  const ville = document.getElementById("city");
+  //verifier si le nom de la ville st rentré correctement
+  const regexVille = /^[a-zA-Z]+[a-zA-Z0-9]+\s*$/;
+  if (regexVille.test(ville.value) === false) {
+    alert("veuillez reseigner une ville correcte");
+    return true;
+  }
+
+  const regex = /^[a-z]+([-][a-z]+){0,2}$/;
+
+  console.log(firstName);
+  console.log(lastName);
+  //verifier si le nom et le prenom son rentrés correctement
+  if (regex.test(firstName.value) === false) {
+    alert("veuillez saisir un prenom correcte");
+    return true;
+  }
+
+  if (regex.test(lastName.value) === false) {
+    alert("veuillez saisir un nom correcte");
+    return true;
+  }
+  //verifier si l'adress est rentrée correctement
+  const regexAdress = /^[a-zA-Z0-9\s,'-]*$/;
+  if (regexAdress.test(adress.value) === false) {
+    alert("veuillez entrer une adresse postale valid");
+    return true;
+  }
+
   inputs.forEach((input) => {
     if (input.value === "") {
       alert("remplir tous les champs");
@@ -228,7 +271,9 @@ function FomulaireInvalide() {
     }
     return false;
   });
+  return false;
 }
+
 function makeRequestBody() {
   const formulaire = document.querySelector(".cart__order__form");
   const firstName = formulaire.elements.firstName.value;
@@ -247,7 +292,7 @@ function makeRequestBody() {
     },
     products: getIdsFromCach(),
   };
-  console.log(body);
+
   return body;
 }
 function getIdsFromCach() {

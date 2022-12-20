@@ -9,6 +9,7 @@ fetch(apiProduct)
       document.getElementById(
         "items"
       ).innerHTML += `<a href="./product.html?id=${product._id}">
+      
               <article>
                <img
                 src="${product.imageUrl}"

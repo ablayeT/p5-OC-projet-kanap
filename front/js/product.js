@@ -63,10 +63,10 @@ function faireCouleurs(colors) {
 const button = document.querySelector("#addToCart");
 // sur le click on va recuperer la funtion "auClick"
 button.addEventListener("click", auClick);
-//
-function auClick() {
+function auClick(price) {
   const color = document.querySelector("#colors").value;
   const quantity = document.querySelector("#quantity").value;
+
   // si tout es ok : direction page panier
   if (commandeValide(color, quantity)) return;
   enregistreCommande(color, quantity);
@@ -83,7 +83,6 @@ function enregistreCommande(color, quantity) {
     id: id,
     color: color,
     quantity: Number(quantity),
-    price: itemPrix,
     imageUrl: imgUrl,
     altTxt: alttext,
     name: nomArtcle,
