@@ -1,6 +1,6 @@
 const orderId = getOrderId();
 
-afficherOrderId(orderId);
+displayOrderId(orderId);
 supprimeToutCach();
 
 function getOrderId() {
@@ -9,7 +9,7 @@ function getOrderId() {
   return urlParams.get("orderId");
 }
 
-function afficherOrderId(orderId) {
+function displayOrderId(orderId) {
   const elementOrderId = document.getElementById("orderId");
   elementOrderId.textContent = orderId;
 }

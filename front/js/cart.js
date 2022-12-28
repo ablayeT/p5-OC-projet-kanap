@@ -1,6 +1,8 @@
 const cart = [];
+let totalPrice = 0;
 // fonction pour recuperer dans le cache
 retrieveProductFromCache();
+let globalPrice = 0;
 
 function retrieveProductFromCache() {
   const numberOfItems = localStorage.length;
@@ -10,6 +12,7 @@ function retrieveProductFromCache() {
 
     cart.push(itemObjet);
   }
+  totalPrice = 0;
   cart.forEach((item) => displayProduct(item)); // affichage des elements
 }
 function displayProduct(item) {
@@ -19,14 +22,14 @@ function displayProduct(item) {
 
   fetch(`http://localhost:3000/api/products/${item.id}`)
     .then((response) => response.json())
-    .then((res) => calculerPrix(res, item, article));
+    .then((res) => calculatePrice(res, item, article));
 
   afficherQuantiteTotal(item);
 }
-function calculerPrix(res, item, article) {
-  const { altTxt, colors, description, imageUrl, name, price } = res;
-  const newPrice = price * item.quantity;
-  afficherPrixTotal(price, item.quantity);
+function calculatePrice(res, item, article) {
+  globalPrice = res.price;
+  const newPrice = globalPrice * item.quantity;
+  afficherPrixTotal(globalPrice, item.quantity);
   item.price = newPrice;
 
   const cartItemContent = makecartContent(item);
@@ -45,13 +48,28 @@ function afficherQuantiteTotal(item) {
 }
 function afficherPrixTotal(price, quantity) {
   //  calcul du prix total dans le panier
-  let total = 0;
+
   const prixTotal = document.querySelector("#totalPrice");
 
   const prixUnitaire = price * quantity;
-  total += prixUnitaire;
+  totalPrice += prixUnitaire;
 
-  prixTotal.textContent = total;
+  prixTotal.textContent = totalPrice;
+}
+function afficherTotalPriceOnInputChanges(oldPrice, newPrice) {
+  //  calcul du prix total dans le panier
+
+  const prixTotal = document.querySelector("#totalPrice");
+
+  totalPrice = totalPrice - oldPrice + newPrice;
+
+  prixTotal.textContent = totalPrice;
+}
+
+function displayPrice(newPrice, id) {
+  const prixTotal = document.querySelector("#" + id);
+
+  prixTotal.textContent = newPrice + " €";
 }
 // function displaye article pour mettre article dan la page
 function displayArticle(article) {
@@ -94,6 +112,7 @@ function makeDescription(item) {
   const p = document.createElement("p");
   p.textContent = item.color;
   const p2 = document.createElement("p");
+  p2.id = "price" + item.id;
   p2.textContent = item.price + " €";
   description.appendChild(h2);
   description.appendChild(p);
@@ -163,19 +182,23 @@ function addQuantityToSettings(settings, item) {
 }
 function miseAjourPrixQuantity(id, nouvelleValue, item) {
   //la fonction find() pour
+  let oldPrice = globalPrice * item.quantity;
   const itemAmettreAjour = cart.find((item) => item.id === id);
   itemAmettreAjour.quantity = Number(nouvelleValue);
   item.quantity = itemAmettreAjour.quantity;
-  afficherPrixTotal(item);
+  let newPrice = item.quantity * globalPrice;
+  afficherTotalPriceOnInputChanges(oldPrice, newPrice);
+  displayPrice(globalPrice * item.quantity, "price" + item.id);
   afficherQuantiteTotal(item);
-  enregistreNewdataToCache(item);
+  item.price = 0;
+  saveNewDataInCache(item);
 }
 function supprimeNewDataDansCach(item) {
   const key = `${item.id}-${item.color}`;
   localStorage.removeItem(key);
 }
 
-function enregistreNewdataToCache(item) {
+function saveNewDataInCache(item) {
   const dataAenregistrer = JSON.stringify(item);
   const key = `${item.id}-${item.color}`; // permettre de mettre deux produits meme couleur
   localStorage.setItem(key, dataAenregistrer);
@@ -186,9 +209,9 @@ function enregistreNewdataToCache(item) {
  */
 
 const boutonComander = document.querySelector("#order");
-boutonComander.addEventListener("click", (e) => soumettreFormulaire(e));
+boutonComander.addEventListener("click", (e) => formData(e));
 
-function soumettreFormulaire(e) {
+function formData(e) {
   e.preventDefault();
   if (cart.length === 0) {
     alert("Selectionner un produit à acheter");

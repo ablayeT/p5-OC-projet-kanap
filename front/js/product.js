@@ -8,30 +8,30 @@ let newPrice;
 
 fetch(`http://localhost:3000/api/products/${id}`)
   .then((response) => response.json())
-  .then((res) => manipulerDonnees(res));
+  .then((res) => useData(res));
 
-function manipulerDonnees(data) {
+function useData(data) {
   const { altTxt, colors, description, imageUrl, name, price } = data;
   itemPrix = price;
   imgUrl = imageUrl;
   alttext = altTxt;
   nomArtcle = name;
   newPrice = itemPrix;
-  faireImage(imageUrl, altTxt);
-  faireNom(name);
+  makeImage(imageUrl, altTxt);
+  makeName(name);
   fairePrix(price);
-  faireDescription(description);
-  faireCouleurs(colors);
+  makeDescription(description);
+  makeColor(colors);
 }
 
-function faireImage(imageUrl, altTxt) {
+function makeImage(imageUrl, altTxt) {
   const image = document.createElement("img");
   image.src = imageUrl;
   image.altTxt = altTxt;
   const parent = document.querySelector(".item__img");
   if (parent != null) parent.appendChild(image);
 }
-function faireNom(name) {
+function makeName(name) {
   const h1 = document.querySelector("#title");
   if (h1 != null) h1.textContent = name;
 }
@@ -43,11 +43,11 @@ function fairePrix(price) {
   }
 }
 
-function faireDescription(description) {
+function makeDescription(description) {
   const p = document.querySelector("#description");
   if (p != null) p.textContent = description;
 }
-function faireCouleurs(colors) {
+function makeColor(colors) {
   const select = document.querySelector("#colors");
 
   if (colors != null) {
@@ -69,14 +69,14 @@ function auClick(price) {
 
   // si tout es ok : direction page panier
   if (commandeValide(color, quantity)) return;
-  enregistreCommande(color, quantity);
+  saveCommand(color, quantity);
   allerVertCart();
 }
 function allerVertCart() {
   window.location.href = "cart.html";
 }
 
-function enregistreCommande(color, quantity) {
+function saveCommand(color, quantity) {
   // la variable "clé" pour mettre deux elements de meme couleur dans le panier
   const clé = `${id}-${color}`;
   const donnees = {
