@@ -78,7 +78,7 @@ function allerVertCart() {
 
 function saveCommand(color, quantity) {
   // la variable "clé" pour mettre deux elements de meme couleur dans le panier
-  const clé = `${id}-${color}`;
+  const clé = `${id}-${color}`; 
   const donnees = {
     id: id,
     color: color,

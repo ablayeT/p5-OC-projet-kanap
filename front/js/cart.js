@@ -2,7 +2,6 @@ const cart = [];
 let totalPrice = 0;
 // fonction pour recuperer dans le cache
 retrieveProductFromCache();
-let globalPrice = 0;
 
 function retrieveProductFromCache() {
   const numberOfItems = localStorage.length;
@@ -27,9 +26,8 @@ function displayProduct(item) {
   afficherQuantiteTotal(item);
 }
 function calculatePrice(res, item, article) {
-  globalPrice = res.price;
-  const newPrice = globalPrice * item.quantity;
-  afficherPrixTotal(globalPrice, item.quantity);
+  const newPrice = res.price * item.quantity;
+  afficherPrixTotal(res.price, item.quantity);
   item.price = newPrice;
 
   const cartItemContent = makecartContent(item);
@@ -67,9 +65,9 @@ function afficherTotalPriceOnInputChanges(oldPrice, newPrice) {
 }
 
 function displayPrice(newPrice, id) {
-  const prixTotal = document.querySelector("#" + id);
+  const product = document.querySelector("#" + id);
 
-  prixTotal.textContent = newPrice + " €";
+  product.textContent = newPrice + " €";
 }
 // function displaye article pour mettre article dan la page
 function displayArticle(article) {
@@ -112,7 +110,7 @@ function makeDescription(item) {
   const p = document.createElement("p");
   p.textContent = item.color;
   const p2 = document.createElement("p");
-  p2.id = "price" + item.id;
+  p2.id = item.color.replaceAll("/", "") + item.id;
   p2.textContent = item.price + " €";
   description.appendChild(h2);
   description.appendChild(p);
@@ -144,7 +142,7 @@ function supprimerItem(item) {
   //methode 'splice()' pour supprimer un produit du panier
   // demarre par itemA supprimer puis on eleve 1
   cart.splice(produitAsupprimer, 1);
-  afficherPrixTotal();
+  afficherPrixTotal(0, 0);
   afficherQuantiteTotal();
   supprimeNewDataDansCach(item);
   supprimeArticledanPage(item);
@@ -182,16 +180,25 @@ function addQuantityToSettings(settings, item) {
 }
 function miseAjourPrixQuantity(id, nouvelleValue, item) {
   //la fonction find() pour
-  let oldPrice = globalPrice * item.quantity;
-  const itemAmettreAjour = cart.find((item) => item.id === id);
-  itemAmettreAjour.quantity = Number(nouvelleValue);
-  item.quantity = itemAmettreAjour.quantity;
-  let newPrice = item.quantity * globalPrice;
-  afficherTotalPriceOnInputChanges(oldPrice, newPrice);
-  displayPrice(globalPrice * item.quantity, "price" + item.id);
-  afficherQuantiteTotal(item);
-  item.price = 0;
-  saveNewDataInCache(item);
+  fetch(`http://localhost:3000/api/products/${item.id}`)
+    .then((response) => response.json())
+    .then((res) => {
+      let oldPrice = res.price * item.quantity;
+      const itemAmettreAjour = cart.find(
+        (produit) => produit.id === item.id && produit.color === item.color
+      );
+      itemAmettreAjour.quantity = Number(nouvelleValue);
+      item.quantity = itemAmettreAjour.quantity;
+      let newPrice = item.quantity * res.price;
+      afficherTotalPriceOnInputChanges(oldPrice, newPrice);
+      displayPrice(
+        res.price * item.quantity,
+        item.color.replaceAll("/", "") + item.id
+      );
+      afficherQuantiteTotal(item);
+      item.price = 0;
+      saveNewDataInCache(item);
+    });
 }
 function supprimeNewDataDansCach(item) {
   const key = `${item.id}-${item.color}`;
