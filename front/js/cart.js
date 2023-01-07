@@ -212,7 +212,7 @@ function saveNewDataInCache(item) {
 }
 
 /**
- * partie FORMULAIRE
+ * partie form
  */
 
 const boutonComander = document.querySelector("#order");
@@ -224,8 +224,8 @@ function formData(e) {
     alert("Selectionner un produit à acheter");
     return;
   }
-  // verication de la validation du formulaire
-  if (FomulaireInvalide()) return;
+  // verication de la validation du form
+  if (formInvalid()) return;
   //------
   // validation de l'email
   if (emailInvalide()) return;
@@ -259,44 +259,41 @@ function emailInvalide() {
   }
   return false;
 }
-function FomulaireInvalide() {
-  const formulaire = document.querySelector(".cart__order__form");
-  const inputs = formulaire.querySelectorAll("input");
+function formInvalid() {
+  const form = document.querySelector(".cart__order__form");
+  const inputs = form.querySelectorAll("input");
   const firstName = document.getElementById("firstName");
   const lastName = document.getElementById("lastName");
   const adress = document.getElementById("address");
-  const ville = document.getElementById("city");
-  //verifier si le nom de la ville st rentré correctement
-  const regexVille = /^[a-zA-Z]+[a-zA-Z0-9]+\s*$/;
-  if (regexVille.test(ville.value) === false) {
-    alert("veuillez reseigner une ville correcte");
-    return true;
-  }
+  const city = document.getElementById("city");
 
-  const regex = /^[a-z]+([-][a-z]+){0,2}$/;
-
-  console.log(firstName);
-  console.log(lastName);
-  //verifier si le nom et le prenom son rentrés correctement
+  const regex = /^([ \u00c0-\u01ffa-zA-Z'\-])+$/;
+  //verifier si le prenom est correcte
   if (regex.test(firstName.value) === false) {
-    alert("veuillez saisir un prenom correcte");
+    alert("Veuillez saisir un prénom correcte");
     return true;
   }
-
+  // verifier si le nom est correcte
   if (regex.test(lastName.value) === false) {
-    alert("veuillez saisir un nom correcte");
+    alert("Veuillez saisir un nom correcte");
     return true;
   }
-  //verifier si l'adress est rentrée correctement
-  const regexAdress = /^[a-zA-Z0-9\s,'-]*$/;
-  if (regexAdress.test(adress.value) === false) {
-    alert("veuillez entrer une adresse postale valid");
+  //verifier si la ville correcte
+  const regexCity = /^[a-zA-Z]+[a-zA-Z0-9]+\s*$/;
+  if (regexCity.test(city.value) === false) {
+    alert("Veuillez reseigne correctement la ville");
+    return true;
+  }
+  //verifier si l'adress est correcte
+  const regexPostalAdress = /^[a-zA-Z0-9\s,'-]*$/;
+  if (regexPostalAdress.test(adress.value) === false) {
+    alert("Veuillez entrer une adresse postale valid");
     return true;
   }
 
   inputs.forEach((input) => {
     if (input.value === "") {
-      alert("remplir tous les champs");
+      alert("Veuillez remplir tous les champs");
       return true;
     }
     return false;
@@ -305,12 +302,12 @@ function FomulaireInvalide() {
 }
 
 function makeRequestBody() {
-  const formulaire = document.querySelector(".cart__order__form");
-  const firstName = formulaire.elements.firstName.value;
-  const lastName = formulaire.elements.lastName.value;
-  const address = formulaire.elements.address.value;
-  const city = formulaire.elements.city.value;
-  const email = formulaire.elements.email.value;
+  const form = document.querySelector(".cart__order__form");
+  const firstName = form.elements.firstName.value;
+  const lastName = form.elements.lastName.value;
+  const address = form.elements.address.value;
+  const city = form.elements.city.value;
+  const email = form.elements.email.value;
 
   const body = {
     contact: {
@@ -326,9 +323,9 @@ function makeRequestBody() {
   return body;
 }
 function getIdsFromCach() {
-  const numbreDeProduits = localStorage.length;
+  const numberOfProduct = localStorage.length;
   const ids = [];
-  for (let i = 0; i < numbreDeProduits; i++) {
+  for (let i = 0; i < numberOfProduct; i++) {
     const key = localStorage.key(i);
     const id = key.split("-")[0];
     ids.push(id);

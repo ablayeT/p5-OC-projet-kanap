@@ -1,7 +1,7 @@
 const orderId = getOrderId();
 
 displayOrderId(orderId);
-supprimeToutCach();
+cleanAllFromCach();
 
 function getOrderId() {
   const queryString = window.location.search;
@@ -13,7 +13,7 @@ function displayOrderId(orderId) {
   const elementOrderId = document.getElementById("orderId");
   elementOrderId.textContent = orderId;
 }
-function supprimeToutCach() {
-  const cache = window.localStorage;
-  cache.clear();
+function cleanAllFromCach() {
+  const cach = window.localStorage;
+  cach.clear();
 }

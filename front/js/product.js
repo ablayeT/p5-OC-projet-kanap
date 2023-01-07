@@ -1,8 +1,8 @@
 var url = new URL(window.location.href);
 var id = url.searchParams.get("id");
 if (id != null) {
-  let itemPrix = 0;
-  let imgeUrl, alttext, nomArtcle;
+  let itemPrice = 0;
+  let imgeUrl, alttext, articleName;
 }
 let newPrice;
 
@@ -12,14 +12,14 @@ fetch(`http://localhost:3000/api/products/${id}`)
 
 function useData(data) {
   const { altTxt, colors, description, imageUrl, name, price } = data;
-  itemPrix = price;
+  itemPrice = price;
   imgUrl = imageUrl;
   alttext = altTxt;
-  nomArtcle = name;
-  newPrice = itemPrix;
+  articleName = name;
+  newPrice = itemPrice;
   makeImage(imageUrl, altTxt);
   makeName(name);
-  fairePrix(price);
+  makePrice(price);
   makeDescription(description);
   makeColor(colors);
 }
@@ -36,10 +36,10 @@ function makeName(name) {
   if (h1 != null) h1.textContent = name;
 }
 
-function fairePrix(price) {
+function makePrice(price) {
   const span = document.querySelector("#price");
   if (span != null) {
-    span.textContent = itemPrix;
+    span.textContent = itemPrice;
   }
 }
 
@@ -61,36 +61,45 @@ function makeColor(colors) {
 }
 
 const button = document.querySelector("#addToCart");
-// sur le click on va recuperer la funtion "auClick"
-button.addEventListener("click", auClick);
-function auClick(price) {
+// sur le click on va recuperer la funtion "ifClick"
+button.addEventListener("click", ifClick);
+function ifClick(price) {
   const color = document.querySelector("#colors").value;
   const quantity = document.querySelector("#quantity").value;
 
   // si tout es ok : direction page panier
-  if (commandeValide(color, quantity)) return;
+  if (commandeValid(color, quantity)) return;
   saveCommand(color, quantity);
-  allerVertCart();
+  goToCart();
 }
-function allerVertCart() {
+function goToCart() {
   window.location.href = "cart.html";
 }
 
 function saveCommand(color, quantity) {
   // la variable "clé" pour mettre deux elements de meme couleur dans le panier
-  const clé = `${id}-${color}`; 
-  const donnees = {
-    id: id,
-    color: color,
-    quantity: Number(quantity),
-    imageUrl: imgUrl,
-    altTxt: alttext,
-    name: nomArtcle,
-  };
-  localStorage.setItem(clé, JSON.stringify(donnees));
+  const cle = `${id}-${color}`;
+  // Si un produit ayant l'id cle existe dans le localstorage alors incrémente le produit
+  const found = localStorage.getItem(cle);
+  let donnees = {};
+  if (found) {
+    donnees = JSON.parse(found);
+    donnees.quantity += Number(quantity);
+  } else {
+    donnees = {
+      id: id,
+      color: color,
+      quantity: Number(quantity),
+      imageUrl: imgUrl,
+      altTxt: alttext,
+      name: articleName,
+    };
+  }
+
+  localStorage.setItem(cle, JSON.stringify(donnees));
 }
 //function qui verifier si la couleur et la quantité sont bien valide
-function commandeValide(color, quantity) {
+function commandeValid(color, quantity) {
   if (
     color == null ||
     color === "" ||
